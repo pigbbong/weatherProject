@@ -10,9 +10,9 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 
 - 기상청 API를 이용해 전국 주요 도시의 날씨 데이터를 주기적으로 수집
 
-- 수집된 데이터를 CSV 형태로 가공
-
 - Airflow DAG을 이용해 주기적 자동 수집 및 적재
+
+- 수집된 데이터를 CSV, Parquet 형태로 가공
 
 - Google Cloud Storage(GCS)에 Raw 데이터 저장
 
