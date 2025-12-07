@@ -29,7 +29,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 
 ## 데이터 파이프라인 요약
 ```plaintext
-[기상청 Open API]
+[네이버 웹 사이트]
         |
         v
 [Python 크롤링 (crawl_now, crawl_after)]
