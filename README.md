@@ -17,3 +17,29 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 - Google Cloud Storage(GCS)에 Raw 데이터 저장
 
 - 저장된 데이터를 기반으로 웹 지도에서 시각화
+
+
+## 시스템 구성
+
+- 데이터 수집: Python (requests)
+- 오케스트레이션: Apache Airflow (Docker)
+- 저장소: Google Cloud Storage (GCS)
+- 웹 시각화: Flask + Leaflet
+- 인프라: AWS EC2, Docker
+
+
+## 웹 시각화 화면
+전국 주요 도시의 현재 날씨 및 예보 정보를 지도 위에 시각화하여 확인할 수 있습니다.
+
+
+지도 확대 시 더 많은 도시의 날씨 정보가 상세하게 표시됩니다.
+
+
+## Airflow DAG 운영 화면
+날씨 데이터 수집 및 적재를 담당하는 DAG들이 일정 주기로 정상 실행되고 있는 화면입니다.
+
+
+## Google Cloud Storage 저장 결과
+Airflow를 통해 생성된 파일들이
+GCS의 디렉토리에 각각의 시간에 맞게 저장됩니다.
+
