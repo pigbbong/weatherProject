@@ -30,7 +30,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 
 ## 웹 시각화 화면
 전국 주요 도시의 현재 날씨 및 예보 정보를 지도 위에 시각화하여 확인할 수 있습니다.
-
+![웹 메인 화면](https://github.com/user-attachments/assets/78e29174-b537-42ef-ba09-5b541d5c1cee)
 
 지도 확대 시 더 많은 도시의 날씨 정보가 상세하게 표시됩니다.
 
