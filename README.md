@@ -33,7 +33,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 ![웹 메인 화면](https://github.com/user-attachments/assets/78e29174-b537-42ef-ba09-5b541d5c1cee)
 
 지도 확대 시 더 많은 도시의 날씨 정보가 상세하게 표시됩니다.
-
+![확대 화면]("https://github.com/user-attachments/assets/05700133-5077-4aa4-a9ff-dfc7f88a3c87")
 
 ## Airflow DAG 운영 화면
 날씨 데이터 수집 및 적재를 담당하는 DAG들이 일정 주기로 정상 실행되고 있는 화면입니다.
