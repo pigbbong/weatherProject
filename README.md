@@ -37,6 +37,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 
 ## Airflow DAG 운영 화면
 날씨 데이터 수집 및 적재를 담당하는 DAG들이 일정 주기로 정상 실행되고 있는 화면입니다.
+![airflow](https://github.com/user-attachments/assets/dc906934-3784-4d8b-aa05-73f0fcb98286)
 
 
 ## Google Cloud Storage 저장 결과
