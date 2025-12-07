@@ -39,8 +39,6 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 날씨 데이터 수집 및 적재를 담당하는 DAG들이 일정 주기로 정상 실행되고 있는 화면입니다.
 ![airflow](https://github.com/user-attachments/assets/dc906934-3784-4d8b-aa05-73f0fcb98286)
 
-
 ## Google Cloud Storage 저장 결과
-Airflow를 통해 생성된 파일들이
-GCS의 디렉토리에 각각의 시간에 맞게 저장됩니다.
-
+Airflow를 통해 생성된 파일들이 GCS의 디렉토리에 각각의 시간에 맞게 저장됩니다.
+![GCS](https://github.com/user-attachments/assets/242b0655-0f32-45d4-95e8-f642423c5692)
