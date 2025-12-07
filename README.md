@@ -41,7 +41,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 [PostgreSQL 적재 (정제 및 적재)]
         |
         v
-[Google Cloud Storage - 가공 데이터]
+[Google Cloud Storage - 배치처리]
      (daily / monthly)
         |
         +------------------------------+
