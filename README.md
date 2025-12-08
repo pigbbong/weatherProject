@@ -21,7 +21,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 
 ## 시스템 구성
 
-- 데이터 수집: Python (requests)
+- 데이터 수집: Python (requests, BeautifulSoup)
 - 오케스트레이션: Apache Airflow (Docker)
 - 저장소: Google Cloud Storage (GCS)
 - 웹 시각화: Flask + Leaflet
