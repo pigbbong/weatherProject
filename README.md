@@ -88,7 +88,7 @@ Leaflet 기반 웹 지도에서 전국 날씨 정보와 현재 위치의 날씨�
 
 ## Airflow DAG 운영 화면
 ### 날씨 데이터 수집 및 적재를 담당하는 DAG들이 일정 주기로 정상 실행되고 있는 화면입니다.
-![airflow]((https://github.com/user-attachments/assets/52673dc9-1d31-486a-b44e-feb531cafbf4))
+![airflow](https://github.com/user-attachments/assets/52673dc9-1d31-486a-b44e-feb531cafbf4)
 
 ## Google Cloud Storage 저장 결과
 ### Airflow를 통해 생성된 파일들이 GCS의 디렉토리에 각각의 시간에 맞게 저장됩니다.
