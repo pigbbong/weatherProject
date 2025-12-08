@@ -1,12 +1,16 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from datetime import datetime
+import pendulum
+
+KST = pendulum.timezone("Asia/Seoul")
 
 with DAG(
     dag_id="current_after",
-    start_date=datetime(2025, 12, 1),
-    schedule="10 3,9,15,21 * * *",  # 매일 3,9,15,21시 10분에 실행
+    start_date=datetime(2025, 12, 1, tzinfo=KST),
+    schedule="10 3,9,15,21 * * *",  # KST 기준 03:10, 09:10, 15:10, 21:10
     catchup=False,
+    timezone=KST,
 ):
 
     crawl = BashOperator(
