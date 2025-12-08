@@ -26,6 +26,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 - 저장소: Google Cloud Storage (GCS)
 - 웹 시각화: Flask + Leaflet
 - 인프라: AWS EC2, Docker
+- DB: Postgre
 
 ## 데이터 파이프라인 요약
 ```plaintext
