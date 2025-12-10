@@ -64,6 +64,11 @@ def upload_daily_to_gcs():
         blob.upload_from_file(buffer, content_type="application/octet-stream")
 
         print("실시간 daily 업로드 완료")
+
+        with engine.begin() as conn:
+            conn.execute(text("TRUNCATE weather_now_daily;"))
+        print("실시간 daily 테이블 초기화 완료")
+
     except Exception as e:
         print(f"{year}년 {month}월 {day}일의 실시간 daily 데이터 GCS로 업로드 중 오류 발생: {e}")
         return
