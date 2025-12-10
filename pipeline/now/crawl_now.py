@@ -8,15 +8,14 @@ import io
 from zoneinfo import ZoneInfo
 import time
 
+# KST 시간 기준
 now_kst = datetime.now(ZoneInfo("Asia/Seoul"))
 
 BASE_DIR = "/opt/pipelines/now"
 ICON_DIR = "/opt/pipelines/icons"
-
 region_json_path = "/opt/pipelines/region.json"
-icon_map_path = "/opt/pipelines/icon_mapping.json"
-
-GOOGLE_CREDENTIAL = "<GCP_SERVICE_ACCOUNT_JSON_PATH>"
+icon_map_path = "/opt/pipelines/icon_mapping.json" 
+GOOGLE_CREDENTIAL = "/opt/keys/service-account.json"
 
 # 브라우저 UA
 HEADERS = {
@@ -47,9 +46,6 @@ with open(region_json_path, "r", encoding="utf-8") as f:
 with open(icon_map_path, "r", encoding="utf-8") as f:
     icon_map = json.load(f)
 
-# 현재 시간
-now = datetime.now()
-
 # DataFrame 컬럼
 columns = [
     "year", "month", "day", "hour", "minute",  "weekday",
@@ -61,8 +57,8 @@ columns = [
 ]
 
 # GCS 설정
-SERVICE_ACCOUNT_KEY = "<GCP_SERVICE_ACCOUNT_JSON_PATH>"
-BUCKET_NAME = "<GCS_BUCKET_NAME>"
+SERVICE_ACCOUNT_KEY = "/opt/keys/service-account.json"
+BUCKET_NAME = "pigbbong_weather"
 
 
 def get_sun_info():
@@ -224,12 +220,12 @@ def scrape_weather(city_name, sun_info):
             icon = None
 
         return {
-            "year": now.year,
-            "month": now.month,
-            "day": now.day,
-            "hour": now.hour,
-            "minute": now.minute,
-            "weekday": now.strftime("%A"),
+            "year": now_kst.year,
+            "month": now_kst.month,
+            "day": now_kst.day,
+            "hour": now_kst.hour,
+            "minute": now_kst.minute,
+            "weekday": now_kst.strftime("%A"),
             "province": province,
             "city": city_name,
             "temperature": temperature,
