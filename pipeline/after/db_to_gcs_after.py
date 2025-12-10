@@ -44,7 +44,7 @@ def upload_monthly_to_gcs():
 
     try:
         # monthly 테이블 조회
-        df = pd.read_sql("SELECT * FROM weather_now_monthly;", con=engine)
+        df = pd.read_sql("SELECT * FROM weather_after_monthly;", con=engine)
 
         if df.empty:
             print("monthly 예보 테이블이 비어있어서 업로드 중단")
@@ -60,8 +60,12 @@ def upload_monthly_to_gcs():
         bucket = client.bucket(BUCKET_NAME)
         blob = bucket.blob(gcs_filename)
         blob.upload_from_file(buffer, content_type="application/octet-stream")
-
         print("예보 monthly 업로드 완료")
+
+        with engine.begin() as conn:
+            conn.execute(text("TRUNCATE weather_after_monthly;"))
+        print("예보 monthly 테이블 초기화 완료")
+
     except Exception as e:
         print(f"{year}년 {month}월의 monthly 예보 데이터 GCS로 업로드 중 오류 발생: {e}")
 
