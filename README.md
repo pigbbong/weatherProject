@@ -33,22 +33,21 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 [네이버 웹 사이트]
         |
         v
-[Python 크롤링 (crawl_now, crawl_after)]
+[Python 크롤링 (crawl_now / crawl_after)]
         |
         v
 [Google Cloud Storage - Raw 영역 (now / after)]
         |
         v
-[PostgreSQL 적재 (정제 및 적재)]
+[PostgreSQL 적재 (정제 및 적재)] <------------------+
+        |                                           |
+        |                                           |
+        |                                           | [Google Cloud Storage - 배치 저장] (daily / monthly)
+   [View Table]                                     |
+        +-------------------------------------------+
         |
         v
-[Google Cloud Storage - 배치처리]
-     (daily / monthly)
-        |
-        +------------------------------+
-        |                              |
-        v                              v
-[웹 서버 API (Flask)]          [장기 저장 / 분석용]
+[웹 서버 API (Flask)]
         |
         v
 [Leaflet 기반 웹 지도 시각화]
