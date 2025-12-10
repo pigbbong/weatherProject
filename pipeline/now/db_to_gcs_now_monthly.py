@@ -64,6 +64,10 @@ def upload_monthly_to_gcs():
 
         print("실시간 monthly 업로드 완료")
 
+        with engine.begin() as conn:
+            conn.execute(text("TRUNCATE weather_now_monthly;"))
+        print("실시간 monthly 테이블 초기화 완료")
+
     except Exception as e:
         print(f"{year}년 {month}월 monthly 데이터를 GCS 업로드 중 오류 발생: {e}")
 
