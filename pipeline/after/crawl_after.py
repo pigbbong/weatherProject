@@ -8,6 +8,7 @@ import io
 from zoneinfo import ZoneInfo
 import time
 
+# KST 시간 기준
 now_kst = datetime.now(ZoneInfo("Asia/Seoul"))
 
 BASE_DIR = "/opt/pipelines/after"
@@ -44,10 +45,7 @@ with open(region_json_path, "r", encoding="utf-8") as f:
 with open(icon_map_path, "r", encoding="utf-8") as f:
     icon_map = json.load(f)
 
-# 현재 시간
-now = datetime.now()
-
-now_hour = now.hour
+now_hour = now_kst.hour
 
 today_remain = 23 - now_hour  # 오늘 남은 시간
 tomorrow_slicing = today_remain + 1  # 내일 0시가 시작 인덱스
@@ -63,8 +61,8 @@ columns = [
 ]
 
 # GCS 설정
-SERVICE_ACCOUNT_KEY = "<GCP_SERVICE_ACCOUNT_JSON_PATH>"
-BUCKET_NAME = "<GCS_BUCKET_NAME>"
+SERVICE_ACCOUNT_KEY = "/opt/keys/service-account.json"
+BUCKET_NAME = "pigbbong_weather"
 
 
 def scrape_weather_tomorrow(city_name):
@@ -220,11 +218,11 @@ def scrape_weather_tomorrow(city_name):
         pm_info = extract_basic(tomorrow_block.select_one("div.inner ._pm, div.inner .pm"))
 
         return {
-            "year": now.year,
-            "month": now.month,
-            "day": now.day,
-            "hour": now.hour,
-            "weekday": now.strftime("%A"),
+            "year": now_kst.year,
+            "month": now_kst.month,
+            "day": now_kst.day,
+            "hour": now_kst.hour,
+            "weekday": now_kst.strftime("%A"),
 
             "forecast": forecast,
             "province": province,
@@ -411,11 +409,11 @@ def scrape_weather_dayafter(city_name):
         pm_info = extract_basic(dayafter_block.select_one("li .inner .pm, li .inner ._pm"))
 
         return {
-            "year": now.year,
-            "month": now.month,
-            "day": now.day,
-            "hour": now.hour,
-            "weekday": now.strftime("%A"),
+            "year": now_kst.year,
+            "month": now_kst.month,
+            "day": now_kst.day,
+            "hour": now_kst.hour,
+            "weekday": now_kst.strftime("%A"),
 
             "forecast": forecast,
             "province": province,
