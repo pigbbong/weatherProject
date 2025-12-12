@@ -54,7 +54,7 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 
 ```
 ### 1. 데이터 수집 (Crawling)
-기상청 Open API를 이용하여 전국 주요 도시의 현재 날씨 및 예보 데이터를 Python으로 수집합니다.
+네이버 웹 사이트를 이용하여 전국 주요 도시의 현재 날씨 및 예보 데이터를 Python으로 수집합니다.
 수집된 원본 데이터는 가공 없이 1차적으로 GCS의 raw/now, raw/after 영역에 저장됩니다.
 
 ### 2. 1차 저장 (Google Cloud Storage - Raw)
