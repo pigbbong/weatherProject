@@ -65,9 +65,9 @@ Google Cloud Storage(GCS)에 저장한 뒤,
 GCS에 저장된 Raw 데이터를 PostgreSQL로 로드하여 컬럼 정규화 및 타입 정제 작업을 수행합니다.
 이후 웹 서비스 및 일별·월별 집계를 위한 기준 데이터로 활용됩니다.
 
-### 4. 2차 가공 및 재적재 (Daily / Monthly)
+### 4. 2차 저장 (Google Cloud Storage - Daily / Monthly)
 PostgreSQL에 적재된 데이터를 기준으로 일별(daily), 월별(monthly) 집계 데이터를 생성합니다.
-생성된 결과 파일은 다시 GCS에 CSV 형태로 저장됩니다.
+생성된 결과 파일은 GCS에 Parquet 형태로 저장됩니다.
 
 ### 5. 웹 시각화 연동
 Flask 기반 API 서버에서 GCS 또는 DB의 데이터를 조회합니다.
