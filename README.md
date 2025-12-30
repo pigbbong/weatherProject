@@ -88,28 +88,40 @@ Flask + Leaflet 기반 웹 지도를 통해 시각화하는 데이터 엔지니�
                                         [Leaflet Web Visualization]
 ```
 ### 1. 데이터 수집 (Crawling)
-공공데이터포털 기상청 API를 이용하여 전국 주요 도시의 현재 날씨 및 예보 데이터를 Python으로 수집합니다.
-수집된 원본 데이터는 가공 없이 1차적으로 GCS의 raw/now, raw/after 영역에 저장됩니다.
+공공데이터포털 기상청 API를 이용하여 전국 주요 도시의 초단기 실황(now), 초단기 예보(ultraShort), 단기 예보(shortFcst) 데이터를 Python으로 수집합니다.
+수집된 데이터는 가공 없이 시간 단위 원본 데이터로 Google Cloud Storage(GCS)의 Raw 영역에 저장됩니다.
 
 ### 2. 1차 저장 (Google Cloud Storage - Raw)
-실시간 수집 데이터 및 예보 데이터는 원본 CSV 형태로 GCS에 시간 단위로 적재됩니다.
+실시간 수집 데이터 및 예보 데이터는 원본 Parquet 형태로 GCS에 시간 단위로 적재됩니다.
 장애 발생 시에도 원본 데이터를 그대로 보존할 수 있도록 Raw 영역을 분리하여 운영합니다.
 
 ### 3. DB 적재 (PostgreSQL)
-GCS에 저장된 Raw 데이터를 PostgreSQL로 로드하여 컬럼 정규화 및 타입 정제 작업을 수행합니다.
-이후 웹 서비스 및 일별·월별 집계를 위한 기준 데이터로 활용됩니다.
+GCS Raw 데이터를 PostgreSQL로 로드하여 컬럼 정규화 및 타입 정제 작업을 수행합니다.
+웹 서비스 조회 성능을 위해 최신 상태 기준 테이블(View / Materialized View) 을 유지하며,
+TRUNCATE + INSERT 방식으로 최신 데이터만 관리합니다.
 
-### 4. 2차 저장 (Google Cloud Storage - Daily / Monthly)
-PostgreSQL에 적재된 데이터를 기준으로 일별(daily), 월별(monthly) 집계 데이터를 생성합니다.
-생성된 결과 파일은 GCS에 Parquet 형태로 저장됩니다.
+### 4. 배치 처리 및 2차 저장 (Spark + GCS Processed Zone)
+Apache Spark를 이용하여 Raw 데이터를 기반으로
+일별(daily), 월별(monthly), 연별(yearly) 배치 데이터를 생성합니다.
+대용량 분석 및 후속 DW 연계를 고려한 Processed Zone 구조로 설계되었습니다.
 
-### 5. 웹 시각화 연동
-Flask 기반 API 서버에서 GCS 또는 DB의 데이터를 조회합니다.
-Leaflet 기반 웹 지도에서 전국 날씨 정보와 현재 위치의 날씨를 시각적으로 확인할 수 있습니다.
+### 5. 분석용 데이터 웨어하우스 연계 (BigQuery)
+Processed Zone의 Parquet 데이터를 BigQuery로 로드하거나 External Table 형태로 연동하여
+날짜 파티션 기반 분석이 가능하도록 구성하였습니다.
 
-### 6. 오케스트레이션 (Airflow)
-위 전 과정은 Apache Airflow DAG으로 스케줄링되어 자동 실행됩니다.
-실시간, 일간, 월간 파이프라인이 각각 분리되어 운영됩니다.
+해당 데이터는 Looker Studio와 연동되어 통계 및 추이 분석용 대시보드로 활용됩니다.
+
+### 6. 캐싱 및 웹 시각화 연동
+PostgreSQL의 View / Materialized View를 기준으로 최신 날씨 데이터를 조회하고,
+조회 결과는 Redis에 캐싱하여 반복 요청 시 DB 부하를 최소화합니다.
+
+Flask 기반 API 서버는 Redis에 캐시된 데이터를 우선적으로 응답하며,
+Leaflet 기반 웹 지도에서는 전국 날씨 정보와 사용자의 현재 위치 날씨를
+빠르고 안정적으로 시각화하여 제공합니다.
+
+### 7. 오케스트레이션 및 인프라 (Airflow, Docker, EC2)
+전체 파이프라인은 Apache Airflow(Docker 기반) 로 구성되어 있으며,
+AWS EC2 환경에서 운영됩니다.
 
 
 ## 웹 시각화 화면
