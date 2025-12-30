@@ -139,6 +139,9 @@ AWS EC2 환경에서 운영됩니다.
 ### Airflow를 통해 생성된 파일들이 GCS의 디렉토리에 각각의 시간에 맞게 저장됩니다.
 ![GCS](https://github.com/user-attachments/assets/f5d22a20-c831-4c57-bb4d-e67cd21c83ce)
 
+## PySpark <-> Bigquery <-> Looker Studio 연동
+### GCS에 저장된 Parquet 데이터를 BigQuery로 연동하여 분석용 데이터 웨어하우스를 구성하고, Looker Studio로 대시보드를 제공합니다.
+![BI](https://github.com/user-attachments/assets/141a6f3d-068c-4200-8408-97d7b29a9599)
 
 ## 참고 사항
 - 직접 실행시킨다면, 코드 부분에서 AMI Key, GCS Bucket 이름, DB 비밀번호 등을 직접 설정한 후 실행해야합니다.
