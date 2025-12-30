@@ -133,11 +133,11 @@ AWS EC2 환경에서 운영됩니다.
 
 ## Airflow DAG 운영 화면
 ### 날씨 데이터 수집 및 적재를 담당하는 DAG들이 일정 주기로 정상 실행되고 있는 화면입니다.
-![airflow](https://github.com/user-attachments/assets/52673dc9-1d31-486a-b44e-feb531cafbf4)
+![airflow](https://github.com/user-attachments/assets/5ad2bc31-50d5-40b6-9ffa-93e0c6500a04)
 
 ## Google Cloud Storage 저장 결과
 ### Airflow를 통해 생성된 파일들이 GCS의 디렉토리에 각각의 시간에 맞게 저장됩니다.
-![GCS](https://github.com/user-attachments/assets/242b0655-0f32-45d4-95e8-f642423c5692)
+![GCS](https://github.com/user-attachments/assets/f5d22a20-c831-4c57-bb4d-e67cd21c83ce)
 
 
 ## 참고 사항
