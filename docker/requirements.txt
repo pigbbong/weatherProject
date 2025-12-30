@@ -1,0 +1,9 @@
+pyspark
+pandas
+pyarrow
+google-cloud-storage
+google-cloud-bigquery
+sqlalchemy
+psycopg2-binary
+requests
+python-dateutil

@@ -1,0 +1,265 @@
+body {
+    margin: 0;
+    background: #f2f2f2;
+    font-family: Arial, sans-serif;
+}
+
+/* 지도 전체 레이아웃 */
+#map-container {
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 70vh;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* 지도 중앙 메시지 */
+#map-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* 상단 UI 영역 */
+#top-ui {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    bottom: calc(70vh + 10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 좌측 그룹 버튼 */
+#group-buttons button {
+    padding: 6px 12px;
+    margin-right: 6px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#group-buttons button.active {
+    background: #1e90ff;
+    color: white;
+    border-color: #1e90ff;
+}
+
+/* 날짜 그룹 버튼 기본 */
+#group-buttons button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* 선택된 날짜 버튼 */
+#group-buttons button.active {
+    background: #2b7cff;      /* 파란색 */
+    color: white;
+    border-color: #2b7cff;
+    font-weight: bold;
+}
+
+/* 우측 레이아웃 셀렉트 */
+#layout-select {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+}
+
+#top-ui select {
+    height: 32px;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+
+/* 공통 마커 박스 스타일 */
+.weather-box,
+.weather-box-rain,
+.weather-box-detail {
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 4px rgba(0,0,0,0.25);
+}
+
+/* 기본 날씨 */
+.weather-box {
+    padding: 3px 4px;
+    border-radius: 6px;
+    text-align: center;
+    width: 60px;
+}
+
+.wb-city {
+    font-size: 9px;
+    font-weight: bold;
+}
+
+.wb-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.wb-cond {
+    font-size: 8px;
+}
+
+.wb-temp {
+    font-size: 9px;
+}
+
+/* 강수 */
+.weather-box-rain {
+    padding: 4px 6px;
+    border-radius: 6px;
+    text-align: center;
+    width: 90px;
+}
+
+.rain-city {
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.rain-info {
+    font-size: 9px;
+    line-height: 12px;
+}
+
+
+/* 바람 */
+.weather-box-wind {
+    padding: 4px 6px;
+    border-radius: 6px;
+    text-align: center;
+    width: 70px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.wind-city {
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.wind-info {
+    font-size: 9px;
+    line-height: 12px;
+}
+
+
+/* 습도 */
+.weather-box-humid {
+    padding: 4px 6px;
+    border-radius: 6px;
+    text-align: center;
+    width: 70px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.humid-city {
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.humid-info {
+    font-size: 9px;
+    line-height: 12px;
+}
+
+
+/* 실시간 날씨 박스 */
+#live-weather-box {
+    position: absolute;
+    top: 40px;
+    left: 10%;
+    width: 300px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    padding: 16px 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+#live-weather-box.loading {
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.live-location {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.live-temp-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.lt-label { font-weight: bold; }
+.lt-temp { font-size: 18px; font-weight: bold; }
+.lt-yesterday { font-size: 14px; color: #444; }
+
+.live-main {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}
+
+.live-icon {
+    width: 48px;
+    height: 48px;
+}
+
+.live-center {
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    gap: 4px;
+}
+
+.live-right {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    margin-left: 20px;
+    gap: 2px;
+}

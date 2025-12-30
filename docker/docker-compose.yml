@@ -1,0 +1,122 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: weather-postgres
+    environment:
+      POSTGRES_USER: <DB_USER>
+      POSTGRES_PASSWORD: <DB_PASSWORD>
+      POSTGRES_DB: <DB_NAME>
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+    ports:
+      - "<DB_PORT>:5432"
+
+  redis:
+    image: redis:7
+    container_name: weather-redis
+    ports:
+      - "<REDIS_PORT>:6379"
+
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weather-airflow-web
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      # Airflow 메타 전용
+      AIRFLOW_HOME: /opt/airflow
+
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://<DB_USER>:<DB_PASSWORD>@postgres:5432/<DB_NAME>
+      AIRFLOW__CORE__FERNET_KEY: "<FERNET_KEY>"
+      AIRFLOW__WEBSERVER__SECRET_KEY: "<WEBSERVER_SECRET_KEY>"
+
+      # DAG 위치만 명확히 지정
+      AIRFLOW__CORE__DAGS_FOLDER: /app/airflow
+
+      # GCP
+      GOOGLE_APPLICATION_CREDENTIALS: <SERVICE_ACCOUNT_JSON_PATH>
+      SPARK_GCS_KEYFILE: <SERVICE_ACCOUNT_JSON_PATH>
+
+    volumes:
+      # Airflow 메타데이터 전용 볼륨
+      - airflow-data:/opt/airflow
+
+      # 기존 구조 그대로 유지
+      - ../:/app
+
+    ports:
+      - "8080:8080"
+
+    command: >
+      bash -c "airflow db migrate && airflow users create --username admin --firstname admin --lastname admin --role Admin --email admin@example.com --password admin || true && airflow webserver"
+
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weather-airflow-scheduler
+    depends_on:
+      - airflow-webserver
+    environment:
+      AIRFLOW_HOME: /opt/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://<DB_USER>:<DB_PASSWORD>@postgres:5432/<DB_NAME>
+      AIRFLOW__CORE__FERNET_KEY: "<FERNET_KEY>"
+      AIRFLOW__CORE__DAGS_FOLDER: /app/airflow
+
+      GOOGLE_APPLICATION_CREDENTIALS: <SERVICE_ACCOUNT_JSON_PATH>
+      SPARK_GCS_KEYFILE: <SERVICE_ACCOUNT_JSON_PATH>
+
+    volumes:
+      - airflow-data:/opt/airflow
+      - ../:/app
+
+    command: scheduler
+
+  web:
+    image: python:3.11-slim
+    container_name: weather-web
+    working_dir: /app/web
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "<REDIS_PORT>"
+      DB_HOST: postgres
+      DB_PORT: "<DB_PORT>"
+      DB_NAME: <DB_NAME>
+      DB_USER: <DB_USER>
+      DB_PASSWORD: <DB_PASSWORD>
+    volumes:
+      - ../:/app
+    ports:
+      - "5000:5000"
+    command: >
+      bash -c "
+      pip install --no-cache-dir flask redis sqlalchemy psycopg2-binary requests &&
+      python app.py
+      "
+
+  nginx:
+    image: nginx:1.25
+    container_name: weather-nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+volumes:
+  postgres_data:
+  airflow-data:

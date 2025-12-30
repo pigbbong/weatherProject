@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Forecast Map</title>
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div id="top-ui">
+    <div id="group-buttons">
+        <button data-group="ultrashort" onclick="selectGroup('ultrashort', event)">초단기</button>
+        <button data-group="today" onclick="selectGroup('today', event)">오늘</button>
+        <button data-group="tomorrow" onclick="selectGroup('tomorrow', event)">내일</button>
+        <button data-group="dayafter" onclick="selectGroup('dayafter', event)">모레</button>
+        <button data-group="twodaysafter" onclick="selectGroup('twodaysafter', event)">글피</button>
+    </div>
+
+    <select id="layout-select" onchange="selectLayout(this.value)">
+        <option value="cond">날씨</option>
+        <option value="rain">강수</option>
+        <option value="wind">바람</option>
+        <option value="humid">습도</option>
+    </select>
+</div>
+
+<div id="map-container">
+    <div id="map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='ui.js') }}"></script>
+<script src="{{ url_for('static', filename='map.js') }}"></script>
+
+</body>
+</html>
