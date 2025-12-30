@@ -140,7 +140,7 @@ AWS EC2 환경에서 운영됩니다.
 ![GCS](https://github.com/user-attachments/assets/f5d22a20-c831-4c57-bb4d-e67cd21c83ce)
 
 ## PySpark <-> Bigquery <-> Looker Studio 연동
-### GCS에 저장된 Parquet 데이터를 BigQuery로 연동하여 분석용 데이터 웨어하우스를 구성하고, Looker Studio로 대시보드를 제공합니다.
+### GCS에 저장된 Parquet 데이터를 BigQuery로 연동하여 분석용 데이터 웨어하우스를 구성하고, Looker Studio로 대시보드를 제공하는 예시를 보여드리고 있습니다.
 ![BI](https://github.com/user-attachments/assets/141a6f3d-068c-4200-8408-97d7b29a9599)
 
 ## 참고 사항
