@@ -11,7 +11,7 @@ Flask + Leaflet 기반 웹 지도를 통해 시각화하는 데이터 엔지니�
 
 ## 개요
 
-- 네이버 웹사이트를 통해 전국 주요 도시의 날씨 데이터를 주기적으로 수집
+- 공공데이터포털 기상청 API를 통해 전국 주요 도시의 날씨 데이터를 주기적으로 수집
 
 - Airflow DAG을 이용해 주기적 자동 수집 및 적재
 
@@ -24,7 +24,7 @@ Flask + Leaflet 기반 웹 지도를 통해 시각화하는 데이터 엔지니�
 
 ## 시스템 구성
 
-- 데이터 수집: Python (requests, BeautifulSoup)
+- 데이터 수집: Crawling
 - 오케스트레이션: Apache Airflow (Docker)
 - 저장소: Google Cloud Storage (GCS)
 - 웹 시각화: Flask + Leaflet
@@ -33,7 +33,7 @@ Flask + Leaflet 기반 웹 지도를 통해 시각화하는 데이터 엔지니�
 
 ## 데이터 파이프라인 요약
 ```plaintext
-[네이버 웹 사이트]
+[공공데이터포털 기상청 API]
         |
         v
 [Python 크롤링 (crawl_now / crawl_after)]
@@ -57,7 +57,7 @@ Flask + Leaflet 기반 웹 지도를 통해 시각화하는 데이터 엔지니�
 
 ```
 ### 1. 데이터 수집 (Crawling)
-네이버 웹 사이트를 이용하여 전국 주요 도시의 현재 날씨 및 예보 데이터를 Python으로 수집합니다.
+공공데이터포털 기상청 API를 이용하여 전국 주요 도시의 현재 날씨 및 예보 데이터를 Python으로 수집합니다.
 수집된 원본 데이터는 가공 없이 1차적으로 GCS의 raw/now, raw/after 영역에 저장됩니다.
 
 ### 2. 1차 저장 (Google Cloud Storage - Raw)
@@ -97,10 +97,9 @@ Leaflet 기반 웹 지도에서 전국 날씨 정보와 현재 위치의 날씨�
 ![GCS](https://github.com/user-attachments/assets/242b0655-0f32-45d4-95e8-f642423c5692)
 
 
-## 주의 사항
+## 참고 사항
 - 직접 실행시킨다면, 코드 부분에서 AMI Key, GCS Bucket 이름, DB 비밀번호 등을 직접 설정한 후 실행해야합니다.
 
-- 본 프로젝트의 데이터 수집은 공공 데이터 API가 아닌 웹 페이지 구조를 직접 파싱하는 방식으로 구현되어 있습니다.
-이로 인해 대상 웹사이트의 HTML 구조가 변경될 경우, 크롤링 로직에 대한 수정이 필요할 수 있습니다.
+- 기존 네이버 웹 사이트를 직접 크롤링하는 방식에서 공공데이터포털API를 통해 크롤링 하는 방법으로 전환하였습니다. 기존의 방식은 branch의 old-main 부분을 참고하시면 됩니다.
 
 - 추후 파이프라인 구조를 변경할 수 있습니다.
