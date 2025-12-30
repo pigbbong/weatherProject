@@ -33,28 +33,59 @@ Flask + Leaflet 기반 웹 지도를 통해 시각화하는 데이터 엔지니�
 
 ## 데이터 파이프라인 요약
 ```plaintext
-[공공데이터포털 기상청 API]
-        |
-        v
-[Python 크롤링 (crawl_now / crawl_after)]
-        |
-        v
-[Google Cloud Storage - Raw 영역 (now / after)]
-        |
-        v
-[PostgreSQL 적재 (정제 및 적재)] <------------------+
-        |                                           |
-        |                                           |
-        |                                           | [Google Cloud Storage - 배치 저장] (daily / monthly)
-   [View Table]                                     |
-        +-------------------------------------------+
-        |
-        v
-[웹 서버 API (Flask)]
-        |
-        v
-[Leaflet 기반 웹 지도 시각화]
-
+[공공데이터포털 / 기상청 API]
+                |
+                v
+        [Python Crawlers]
+        - now (초단기 실황)
+        - ultraShort (초단기 예보)
+        - shortFcst (단기 예보)
+                |
+                v
+   [Google Cloud Storage - Raw Zone]
+   - raw/weather/now/
+   - raw/weather/ultraShort/
+   - raw/weather/shortFcst/
+                |
+                v
+   [Apache Airflow (Docker on EC2)]
+   - DAG 스케줄링
+   - 실패 재시도 / 로그 관리
+   - SSH Port Forwarding으로 UI 접근
+                |
+                +--------------------------------------+
+                |                                      |
+                v                                      v
+      [Spark Batch Processing]            [PostgreSQL (Latest View)]
+      - daily / monthly / yearly          - 최신 상태 기준 테이블
+      - partition(year/month/day)         - TRUNCATE + INSERT
+                |                                      |
+                v                                      |
+   [Google Cloud Storage - Processed Zone]             |
+   - processed/weather/batch/                          |
+       - daily                                         |
+       - monthly                                       |
+       - yearly                                        |
+                |                                      |
+                v                                      v
+          [BigQuery]                         [View / Materialized View]
+          (Analytical DW)                              |
+          - External / Load Table                      |
+          - Partition 기반 분석                        |
+                |                                      |
+                v                                      v
+        [Looker Studio]                       [Redis Cache Layer]
+        (BI Dashboard)                       - 최신 조회 결과 캐싱
+                                               - API 응답 속도 개선
+                                                    |
+                                                    v
+                                            [Flask API Server]
+                                                    |
+                                                    v
+                                           [Nginx Reverse Proxy]
+                                                    |
+                                                    v
+                                        [Leaflet Web Visualization]
 ```
 ### 1. 데이터 수집 (Crawling)
 공공데이터포털 기상청 API를 이용하여 전국 주요 도시의 현재 날씨 및 예보 데이터를 Python으로 수집합니다.
