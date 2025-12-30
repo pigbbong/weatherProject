@@ -129,7 +129,7 @@ AWS EC2 환경에서 운영됩니다.
 ![웹 메인 화면](https://github.com/user-attachments/assets/7ed95969-80bb-4673-ba64-1ee132796964)
 
 ### 지도 확대 시 더 많은 도시의 날씨 정보가 상세하게 표시됩니다.
-![확대 화면](https://github.com/user-attachments/assets/05700133-5077-4aa4-a9ff-dfc7f88a3c87)
+![확대 화면](https://github.com/user-attachments/assets/555350b1-c319-4b93-af44-999e64e57103)
 
 ## Airflow DAG 운영 화면
 ### 날씨 데이터 수집 및 적재를 담당하는 DAG들이 일정 주기로 정상 실행되고 있는 화면입니다.
