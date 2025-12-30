@@ -1,9 +1,12 @@
 # Weather Data Pipeline & Visualization Project
 
-본 프로젝트는 네이버 웹사이트의 실시간 및 예보 날씨 데이터를 수집하여
-Airflow 기반 데이터 파이프라인으로 처리하고,
-Google Cloud Storage(GCS)에 저장한 뒤,
-웹 지도를 통해 시각화하는 프로젝트입니다.
+본 프로젝트는 네이버 웹사이트 및 공공 API의 실시간·예보 날씨 데이터를 수집하여,
+Apache Airflow 기반 배치 파이프라인으로 자동화하고,
+Raw / Processed 레이어로 분리된 GCS Data Lake에 적재한 뒤,
+Flask + Leaflet 기반 웹 지도를 통해 시각화하는 데이터 엔지니어링 프로젝트입니다.
+
+데이터 수집 → 저장 → 배치 처리 → 시각화까지
+엔드투엔드 파이프라인 설계를 목표로 합니다.
 
 
 ## 개요
