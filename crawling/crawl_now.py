@@ -241,13 +241,15 @@ def save_parquet_to_gcs(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    df = []
+    df = None
+    
     try:
         df = crawl()
     except Exception as e:
-        print(f"{base_dt}, 초단기실황 크롤링 중 오류 발생: {e}")
-
-    try:
+        print(f"초단기실황 크롤링 중 오류 발생: {e}")
+        df = None
+    
+    if df is None or df.empty:
+        print("데이터 없음 → 이번 실행 스킵")
+    else:
         save_parquet_to_gcs(df)
-    except Exception as e:
-        print(f"{base_dt}, 초단기실황 Raw data GCS에 적재 중 오류 발생: {e}")
