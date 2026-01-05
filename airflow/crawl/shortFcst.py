@@ -28,7 +28,11 @@ with DAG(
     # 단기예보 크롤링
     crawl_short = BashOperator(
         task_id="crawl_short_fcst",
-        bash_command="""python /app/crawling/crawl_short.py""",
+        bash_command="""
+        sleep 60
+        sleep $((RANDOM % 420))
+        python /app/crawling/crawl_short.py
+        """,
     )
 
     # Redis 캐시 갱신
