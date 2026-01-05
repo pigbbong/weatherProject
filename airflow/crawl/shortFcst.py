@@ -15,30 +15,30 @@ default_args = {
 }
 
 with DAG(
-    dag_id="crawl_short_fcst",
-    description="단기예보 크롤링",
+    dag_id="crawl_ultrashort_fcst",
+    description="초단기예보 크롤링",
     default_args=default_args,
     start_date=datetime(2025, 12, 1, tzinfo=KST),
-    schedule_interval="12 2,5,8,11,14,17,20,23 * * *",
+    schedule_interval="47 * * * *",
     catchup=False,
     max_active_runs=1,
     tags=["crawl"],
 ) as dag:
 
-    # 단기예보 크롤링
-    crawl_short = BashOperator(
-        task_id="crawl_short_fcst",
+    # 초단기예보 크롤링
+    crawl_ultrashort = BashOperator(
+        task_id="crawl_ultrashort_fcst",
         bash_command="""
-        sleep 60
+        sleep 30
         sleep $((RANDOM % 420))
-        python /app/crawling/crawl_short.py
+        python /app/crawling/crawl_ultraShort.py
         """,
     )
 
     # Redis 캐시 갱신
-    cache_short = BashOperator(
+    cache_ultrashort = BashOperator(
         task_id="cache_ultrashort_to_redis",
-        bash_command="""python /app/web/cache/cache_short.py""",
+        bash_command="""python /app/web/cache/cache_ultraShort.py""",
     )
 
-    crawl_short >> cache_short
+    crawl_ultrashort >> cache_ultrashort
