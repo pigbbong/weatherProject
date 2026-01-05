@@ -5,20 +5,20 @@ services:
     image: postgis/postgis:15-3.3
     container_name: weather-postgres
     environment:
-      POSTGRES_USER: <DB_USER>
-      POSTGRES_PASSWORD: <DB_PASSWORD>
-      POSTGRES_DB: <DB_NAME>
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: weather
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./initdb:/docker-entrypoint-initdb.d
     ports:
-      - "<DB_PORT>:5432"
+      - "5432:5432"
 
   redis:
     image: redis:7
     container_name: weather-redis
     ports:
-      - "<REDIS_PORT>:6379"
+      - "6379:6379"
 
   airflow-webserver:
     build:
@@ -34,16 +34,17 @@ services:
 
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://<DB_USER>:<DB_PASSWORD>@postgres:5432/<DB_NAME>
-      AIRFLOW__CORE__FERNET_KEY: "<FERNET_KEY>"
-      AIRFLOW__WEBSERVER__SECRET_KEY: "<WEBSERVER_SECRET_KEY>"
+      AIRFLOW__LOGGING__MAX_LOG_AGE_IN_DAYS: 7  # 7일 지난 로그 자동 삭제
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/weather
+      AIRFLOW__CORE__FERNET_KEY: "8zv6M8uZ4RzC0Yy8m6X7pP2xG7o3v0G4pK9V5WQK3zI="
+      AIRFLOW__WEBSERVER__SECRET_KEY: "H9R1bYHqYc2mG8k0N1r7xQpD7zKc0FQx2ZxM9nG8s4"
 
       # DAG 위치만 명확히 지정
       AIRFLOW__CORE__DAGS_FOLDER: /app/airflow
 
       # GCP
-      GOOGLE_APPLICATION_CREDENTIALS: <SERVICE_ACCOUNT_JSON_PATH>
-      SPARK_GCS_KEYFILE: <SERVICE_ACCOUNT_JSON_PATH>
+      GOOGLE_APPLICATION_CREDENTIALS: /app/weather-478204-ef92d51ff50c.json
+      SPARK_GCS_KEYFILE: /app/weather-478204-ef92d51ff50c.json
 
     volumes:
       # Airflow 메타데이터 전용 볼륨
@@ -69,19 +70,20 @@ services:
     environment:
       AIRFLOW_HOME: /opt/airflow
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://<DB_USER>:<DB_PASSWORD>@postgres:5432/<DB_NAME>
-      AIRFLOW__CORE__FERNET_KEY: "<FERNET_KEY>"
+      AIRFLOW__LOGGING__MAX_LOG_AGE_IN_DAYS: 7  # 7일 지난 로그 자동 삭제
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/weather
+      AIRFLOW__CORE__FERNET_KEY: "8zv6M8uZ4RzC0Yy8m6X7pP2xG7o3v0G4pK9V5WQK3zI="
       AIRFLOW__CORE__DAGS_FOLDER: /app/airflow
 
-      GOOGLE_APPLICATION_CREDENTIALS: <SERVICE_ACCOUNT_JSON_PATH>
-      SPARK_GCS_KEYFILE: <SERVICE_ACCOUNT_JSON_PATH>
+      GOOGLE_APPLICATION_CREDENTIALS: /app/weather-478204-ef92d51ff50c.json
+      SPARK_GCS_KEYFILE: /app/weather-478204-ef92d51ff50c.json
 
     volumes:
       - airflow-data:/opt/airflow
       - ../:/app
 
     command: scheduler
-
+      
   web:
     image: python:3.11-slim
     container_name: weather-web
@@ -91,12 +93,12 @@ services:
       - postgres
     environment:
       REDIS_HOST: redis
-      REDIS_PORT: "<REDIS_PORT>"
+      REDIS_PORT: "6379"
       DB_HOST: postgres
-      DB_PORT: "<DB_PORT>"
-      DB_NAME: <DB_NAME>
-      DB_USER: <DB_USER>
-      DB_PASSWORD: <DB_PASSWORD>
+      DB_PORT: "5432"
+      DB_NAME: weather
+      DB_USER: airflow
+      DB_PASSWORD: airflow
     volumes:
       - ../:/app
     ports:
