@@ -389,7 +389,7 @@ def ultra_fcst_to_db(df):
 
 
 if __name__ == "__main__":
-    df = []
+    df = None
 
     # 현재 시각 기준 낮/밤 판정
     IS_DAYTIME_NOW = is_daytime_by_season(now)
@@ -397,14 +397,12 @@ if __name__ == "__main__":
     try:
         df = crawl()
     except Exception as e:
-        print(f"{base_dt}, 초단기예보 크롤링 중 오류 발생: {e}")
+        print(f"초단기예보 크롤링 중 오류 발생 (이번 회차 스킵): {e}")
+        df = None
 
-    try:
-        save_parquet_to_gcs(df)
-    except Exception as e:
-        print(f"{base_dt}, 초단기예보 Raw data GCS에 적재 중 오류 발생: {e}")
+    if df is None or df.empty:
+        print("이번 회차 초단기예보 데이터 없음 → 정상 종료")
+        exit(0)
 
-    try:
-        ultra_fcst_to_db(df)
-    except Exception as e:
-        print(f"{base_dt}, 초단기예보 데이터 DB에 적재 중 오류 발생: {e}")
+    save_parquet_to_gcs(df)
+    ultra_fcst_to_db(df)
