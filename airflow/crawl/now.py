@@ -28,7 +28,10 @@ with DAG(
     # 초단기실황 크롤링
     crawl_now = BashOperator(
         task_id="crawl_now",
-        bash_command="""python /app/crawling/crawl_now.py"""
+        bash_command="""
+        sleep $((RANDOM % 480));
+        python /app/crawling/crawl_now.py
+        """
     )
 
     crawl_now
