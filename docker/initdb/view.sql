@@ -28,11 +28,14 @@ weather_ranked AS (
         f.weather_frequency,
 		f.weather_key,
         CASE
-			WHEN split_part(w.icon_map, '_', 1) = '번개,뇌우' THEN 6
-            WHEN split_part(w.icon_map, '_', 1) IN ('강한눈','강한비') THEN 5
-            WHEN split_part(w.icon_map, '_', 1) = '눈비'              THEN 4
-            WHEN split_part(w.icon_map, '_', 1) IN ('비','눈')        THEN 3
-            WHEN split_part(w.icon_map, '_', 1) IN ('약한눈','약한비') THEN 2
+			WHEN split_part(w.icon_map, '_', 1) = '번개,뇌우' THEN 9
+			WHEN split_part(w.icon_map, '_', 1) = '강한눈' THEN 8
+            WHEN split_part(w.icon_map, '_', 1) = '강한비' THEN 7
+			WHEN split_part(w.icon_map, '_', 1) = '눈비'   THEN 6
+            WHEN split_part(w.icon_map, '_', 1) = '눈'     THEN 5
+            WHEN split_part(w.icon_map, '_', 1) = '비'     THEN 4
+			WHEN split_part(w.icon_map, '_', 1) = '약한눈' THEN 3
+            WHEN split_part(w.icon_map, '_', 1) = '약한비' THEN 2
             ELSE 1
         END AS weather_priority
     FROM weather_ultrashort_fcst w
@@ -182,10 +185,13 @@ weather_ranked AS (
         f.weather_frequency,
 		f.weather_key,
         CASE
-            WHEN split_part(w.icon_map, '_', 1) IN ('강한눈','강한비') THEN 5
-            WHEN split_part(w.icon_map, '_', 1) = '눈비'              THEN 4
-            WHEN split_part(w.icon_map, '_', 1) IN ('비','눈')        THEN 3
-            WHEN split_part(w.icon_map, '_', 1) IN ('약한눈','약한비') THEN 2
+			WHEN split_part(w.icon_map, '_', 1) = '강한눈' THEN 8
+            WHEN split_part(w.icon_map, '_', 1) = '강한비' THEN 7
+			WHEN split_part(w.icon_map, '_', 1) = '눈비'   THEN 6
+            WHEN split_part(w.icon_map, '_', 1) = '눈'     THEN 5
+            WHEN split_part(w.icon_map, '_', 1) = '비'     THEN 4
+			WHEN split_part(w.icon_map, '_', 1) = '약한눈' THEN 3
+            WHEN split_part(w.icon_map, '_', 1) = '약한비' THEN 2
             ELSE 1
         END AS weather_priority
     FROM weather_short_fcst w
@@ -222,10 +228,21 @@ WHERE w.rn = 1;
 
 -- 강수 뷰
 CREATE OR REPLACE VIEW weather_shortfcst_rain_view AS
-WITH rain_ranked AS (
+WITH base_calc AS (
+    SELECT
+        *,
+        to_timestamp(basetime, 'YYYYMMDDHH24MISS') AS base_ts,
+        substr(basetime, 9, 2) AS base_hour
+    FROM weather_short_fcst
+),
+
+rain_ranked AS (
     SELECT
         city,
         fcstdate,
+        basetime,
+        base_ts,
+        base_hour,
         "PCP",
         "POP",
         geom,
@@ -234,49 +251,99 @@ WITH rain_ranked AS (
             ORDER BY
                 CASE
                     WHEN "PCP" IS NULL THEN 0
-                    WHEN "PCP" = '0mm' THEN 0
+	                WHEN "PCP" = '0mm' THEN 0
+	
+		            -- 글피 정성코드 시간대
+		            WHEN "PCP" = '1' THEN 1
+		            WHEN "PCP" = '2' THEN 2
+		            WHEN "PCP" = '3' THEN 3
+
+					-- 나머지 시간대
                     WHEN "PCP" = '1mm 미만' THEN 0.5
                     WHEN "PCP" = '30~50mm' THEN 30
                     WHEN "PCP" = '50mm 이상' THEN 50
                     ELSE regexp_replace("PCP", '[^0-9\.]', '', 'g')::numeric
                 END DESC, "POP" DESC
         ) AS rn
-    FROM weather_short_fcst
+    FROM base_calc
 ),
+
 snow_ranked AS (
     SELECT
         city,
         fcstdate,
+        basetime,
+        base_ts,
+        base_hour,
         "SNO",
         ROW_NUMBER() OVER (
             PARTITION BY city, fcstdate
             ORDER BY
-                CASE
-                    WHEN "SNO" IS NULL THEN 0
-                    WHEN "SNO" = '0cm' THEN 0
-                    WHEN "SNO" = '0.5cm 미만' THEN 0.25
-                    WHEN "SNO" = '5.0cm 이상' THEN 5
-                    ELSE regexp_replace("SNO", '[^0-9\.]', '', 'g')::numeric
+				CASE
+					WHEN "SNO" IS NULL THEN 0
+					WHEN "SNO" = '0cm' THEN 0
+	
+					-- 글피 정성코드 시간대 
+					WHEN "SNO" = '1' THEN 1
+					WHEN "SNO" = '2' THEN 2
+
+					-- 나머지 시간대
+					WHEN "SNO" = '0.5cm 미만' THEN 0.25
+					WHEN "SNO" = '5.0cm 이상' THEN 5
+					ELSE regexp_replace("SNO", '[^0-9\.]', '', 'g')::numeric
                 END DESC
         ) AS rn
-    FROM weather_short_fcst
+    FROM base_calc
 )
+
 SELECT
     r.city AS 도시,
     r.fcstdate,
 
-    /* 글피 예보 강수량 정성코드 해석 */
     CASE
-        WHEN r."PCP" = '1' THEN '시간당 3mm 미만'
-        WHEN r."PCP" = '2' THEN '시간당 3~15mm'
-        WHEN r."PCP" = '3' THEN '시간당 15mm 이상'
+        -- 글피 + 02·05·08·11·14시 → 정성코드
+        WHEN
+            r.fcstdate = to_char(r.base_ts + interval '3 day', 'YYYYMMDD')
+            AND r.base_hour IN ('02','05','08','11','14')
+            AND r."PCP" IN ('1','2','3')
+        THEN
+            CASE r."PCP"
+                WHEN '1' THEN '시간당 3mm 미만'
+                WHEN '2' THEN '시간당 3~15mm'
+                WHEN '3' THEN '시간당 15mm 이상'
+            END
+
+        -- 글피 + 17·20·23시 → 숫자면 mm 붙이기
+        WHEN
+            r.fcstdate = to_char(r.base_ts + interval '3 day', 'YYYYMMDD')
+            AND r.base_hour IN ('17','20','23')
+            AND r."PCP" ~ '^[0-9]+(\.[0-9]+)?$'
+        THEN
+            r."PCP" || 'mm'
+
         ELSE r."PCP"
     END AS 강수량,
 
-    /* 글피 예보 강설량 정성코드 해석 */
     CASE
-        WHEN s."SNO" = '1' THEN '시간당 1cm 미만'
-        WHEN s."SNO" = '2' THEN '시간당 1cm 이상'
+        -- 글피 + 02·05·08·11·14시 → 정성코드
+        WHEN
+            s.fcstdate = to_char(s.base_ts + interval '3 day', 'YYYYMMDD')
+            AND s.base_hour IN ('02','05','08','11','14')
+            AND s."SNO" IN ('1','2')
+        THEN
+            CASE s."SNO"
+                WHEN '1' THEN '시간당 1cm 미만'
+                WHEN '2' THEN '시간당 1cm 이상'
+            END
+
+        -- 글피 + 17·20·23시 → 숫자면 cm 붙이기
+        WHEN
+            s.fcstdate = to_char(s.base_ts + interval '3 day', 'YYYYMMDD')
+            AND s.base_hour IN ('17','20','23')
+            AND s."SNO" ~ '^[0-9]+(\.[0-9]+)?$'
+        THEN
+            s."SNO" || 'cm'
+
         ELSE s."SNO"
     END AS 강설량,
 
