@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta
 from common import get_redis_client, fetch_geojson_from_view
+from zoneinfo import ZoneInfo
 
 redis_client = get_redis_client()
 
@@ -22,7 +23,8 @@ TTL = 21600  # 6시간
 
 
 def main():
-    today = datetime.now().date()
+    now = datetime.now(ZoneInfo("Asia/Seoul"))
+    today = now.date()
 
     for group, offset in DATE_GROUPS.items():
         fcstdate = (today + timedelta(days=offset)).strftime("%Y%m%d")
