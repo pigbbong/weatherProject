@@ -41,6 +41,7 @@ def main():
                     to_date(substr(basetime, 1, 8), 'yyyyMMdd') AS date,
                     T1H
                 FROM weather_daily
+                WHERE T1H NOT IN (-999.0)
             )
             SELECT
                 city,
